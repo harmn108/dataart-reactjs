@@ -22,9 +22,9 @@ const Directories = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const routeChange = (path) => {
+  const routeChange = (path) =>{ 
     history.push(path);
-  };
+  }
 
   const updateDirectoriesTree = () => {
     axios
@@ -33,9 +33,7 @@ const Directories = (props) => {
         setPureData(res.data);
         setData(Object.assign({}, listToTree(res.data)));
         if (props.selectedDirectoryId) {
-          const selectedDictionary = res.data.filter(
-            (f) => f.id === Number.parseInt(props.selectedDirectoryId, 10)
-          );
+          const selectedDictionary = res.data.filter((f) => f.id === Number.parseInt(props.selectedDirectoryId, 10));
           if (selectedDictionary.length) {
             props.onChange(selectedDictionary[0].id);
           }
@@ -173,10 +171,7 @@ const Directories = (props) => {
       const { style, decorators, onClick, node } = this.props;
       const classes = ["pointer"];
       console.log(node, props.selectedDirectoryId);
-      if (
-        (node.active && node.parentId) ||
-        node.id === Number.parseInt(props.selectedDirectoryId, 10)
-      ) {
+      if ((node.active && node.parentId) || (node.id === Number.parseInt(props.selectedDirectoryId, 10))) {
         classes.push("active");
       }
       return (
@@ -222,7 +217,7 @@ const Directories = (props) => {
   }
 
   const onToggle = (node, toggled) => {
-    console.log("a");
+    console.log('a');
     if (cursor) {
       cursor.active = false;
     }
@@ -233,7 +228,7 @@ const Directories = (props) => {
     }
     setCursor(node);
     setData(Object.assign({}, data));
-    routeChange("/directories/" + node.id);
+    routeChange('/directories/' + node.id);
   };
 
   const defaultStyles = {
@@ -328,7 +323,11 @@ const Directories = (props) => {
       />
     );
   }
-  return <Container>{directoriesBlock}</Container>;
+  return (
+      <Container>
+        {directoriesBlock}
+      </Container>
+    );
 };
 
 export default Directories;
