@@ -8,8 +8,11 @@ const RoutesList = () => (
     <Route path="/" exact>
       <Dashboard />
     </Route>
-    <Route path="/directories/:id" render={(props) => <Dashboard {...props} />}/> 
-    <Route path='*' exact={true} component={PageNotFound} />
+    <Route
+      path="/directories/:id"
+      render={(props) => <Dashboard {...props} />}
+    />
+    <Route path="*" exact={true} component={PageNotFound} />
   </Switch>
 );
 

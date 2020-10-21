@@ -4,8 +4,8 @@ import Directories from "../components/Directories/Directories";
 import Notices from "../components/Notices/Notices";
 import Toolbar from "../components/Toolbar";
 import styled from "styled-components";
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 import { changeDirectory } from "../redux/actions";
 
@@ -19,14 +19,20 @@ const ItemContainer = styled.div`
 `;
 
 const Dashboard = (props) => {
-  const selectedDirectoryId = (props.match && props.match.params && props.match.params.id) ? props.match.params.id : 0
+  const selectedDirectoryId =
+    props.match && props.match.params && props.match.params.id
+      ? props.match.params.id
+      : 0;
   return (
     <Container>
       <ItemContainer flex="1">
         <Toolbar />
       </ItemContainer>
       <ItemContainer flex="4">
-        <Directories selectedDirectoryId={selectedDirectoryId} onChange={(id) => props.changeDirectory(id)} />
+        <Directories
+          selectedDirectoryId={selectedDirectoryId}
+          onChange={(id) => props.changeDirectory(id)}
+        />
       </ItemContainer>
       <ItemContainer flex="10">
         <DndProvider backend={HTML5Backend}>

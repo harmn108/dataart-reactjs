@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import Notice from "./Notice.js";
 import styled from "styled-components";
 import axios from "axios";
-import { useDrop } from 'react-dnd';
-import update from 'immutability-helper';
+import { useDrop } from "react-dnd";
+import update from "immutability-helper";
 
 const Container = styled.div`
   border: 1px solid #ccc;
@@ -27,10 +27,12 @@ const Notices = (props) => {
       .get("http://localhost:3001/notices")
       .then((res) => {
         if (res.data && res.data.length) {
-            let currentNoticesData = res.data.filter((notice) => notice.directoryId === props.directoryId);
-            currentNoticesData.sort((a, b) => a.position - b.position);
-            setNoticesData(currentNoticesData);
-        } 
+          let currentNoticesData = res.data.filter(
+            (notice) => notice.directoryId === props.directoryId
+          );
+          currentNoticesData.sort((a, b) => a.position - b.position);
+          setNoticesData(currentNoticesData);
+        }
       })
       .catch((error) => {
         console.log("error:", error);
@@ -57,29 +59,33 @@ const Notices = (props) => {
   // };
 
   const updateNotice = (notice) => {
-    axios.put('http://localhost:3001/notices/' + notice.id, {
-      id: notice.id,
-      directoryId: notice.directoryId,
-      position: notice.position,
-      title: notice.title,
-      description: notice.description,
-      tags: notice.tags
-    }).then(result => {
-        setNoticesData(noticesData.filter((item, index) => {
-          if (item.id === notice.id) {
-            notice.editMode = false;
-            noticesData[index] = notice;
-          }
-          return item;
-        }));
-    });
+    axios
+      .put("http://localhost:3001/notices/" + notice.id, {
+        id: notice.id,
+        directoryId: notice.directoryId,
+        position: notice.position,
+        title: notice.title,
+        description: notice.description,
+        tags: notice.tags,
+      })
+      .then((result) => {
+        setNoticesData(
+          noticesData.filter((item, index) => {
+            if (item.id === notice.id) {
+              notice.editMode = false;
+              noticesData[index] = notice;
+            }
+            return item;
+          })
+        );
+      });
   };
 
   const deleteNotice = (id) => {
     axios
       .delete("http://localhost:3001/notices/" + id)
       .then((res) => {
-        setNoticesData(noticesData.filter(item => item.id !== id));
+        setNoticesData(noticesData.filter((item) => item.id !== id));
       })
       .catch((error) => {
         console.log("error:", error);
@@ -88,56 +94,69 @@ const Notices = (props) => {
 
   const reorderNoticesData = (updatedNoticesData) => {
     if (updatedNoticesData && updatedNoticesData.length) {
-        updatedNoticesData.forEach((data, index) => {
-          axios.put('http://localhost:3001/notices/' + data.id, {
-              id: data.id,
-              directoryId: data.directoryId,
-              position: index,
-              title: data.title,
-              description: data.description,
-              tags: data.tags
-          }).then(data => {
-              // console.log(data);
+      updatedNoticesData.forEach((data, index) => {
+        axios
+          .put("http://localhost:3001/notices/" + data.id, {
+            id: data.id,
+            directoryId: data.directoryId,
+            position: index,
+            title: data.title,
+            description: data.description,
+            tags: data.tags,
+          })
+          .then((data) => {
+            // console.log(data);
           });
-        });
+      });
     }
   };
 
-    const moveNotice = (id, atIndex) => {
-        const { notice, index } = findNotice(id);
-        setNoticesData(update(noticesData, {
-            $splice: [
-                [index, 1],
-                [atIndex, 0, notice],
-            ],
-        }));
+  const moveNotice = (id, atIndex) => {
+    const { notice, index } = findNotice(id);
+    setNoticesData(
+      update(noticesData, {
+        $splice: [
+          [index, 1],
+          [atIndex, 0, notice],
+        ],
+      })
+    );
 
-        setNoticesData((state) => {
-            reorderNoticesData(state);
-            return state;
-          });
+    setNoticesData((state) => {
+      reorderNoticesData(state);
+      return state;
+    });
+  };
+
+  const findNotice = (id) => {
+    const notice = noticesData.filter((c) => `${c.id}` === id)[0];
+    return {
+      notice,
+      index: noticesData.indexOf(notice),
     };
+  };
 
-    const findNotice = (id) => {
-        const notice = noticesData.filter((c) => `${c.id}` === id)[0];
-        return {
-            notice,
-            index: noticesData.indexOf(notice),
-        };
-    };
-    
-    const [, drop] = useDrop({ accept: 'card' });
+  const [, drop] = useDrop({ accept: "card" });
 
-    let noticesList = null;
-    if (noticesData && noticesData.length) {
-        noticesList = noticesData.map((notice) => (
-            <Notice key={notice.id} data={notice} id={`${notice.id}`} text={notice.text} moveNotice={moveNotice} findNotice={findNotice} updateNotice={updateNotice} deleteNotice={deleteNotice}/>
-        ));
-    }
+  let noticesList = null;
+  if (noticesData && noticesData.length) {
+    noticesList = noticesData.map((notice) => (
+      <Notice
+        key={notice.id}
+        data={notice}
+        id={`${notice.id}`}
+        text={notice.text}
+        moveNotice={moveNotice}
+        findNotice={findNotice}
+        updateNotice={updateNotice}
+        deleteNotice={deleteNotice}
+      />
+    ));
+  }
 
   return (
     <Container ref={drop}>
-            {noticesList}
+      {noticesList}
       {/* <div><SearchBar/></div> */}
     </Container>
   );
