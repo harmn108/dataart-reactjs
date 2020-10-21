@@ -2,13 +2,13 @@ import React from "react";
 import "./App.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import Dashboard from "./containers/Dashboard";
+import RoutesList from "./RoutesList";
 
 function App() {
   return (
     <>
       <Header />
-      <Dashboard />
+      <RoutesList />
       <Footer />
     </>
   );
