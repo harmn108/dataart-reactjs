@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { listToTree } from "../../utils/Utils";
 import "./Directories.css";
 import styled from "styled-components";
@@ -14,10 +15,16 @@ const Directories = (props) => {
   const [data, setData] = useState(null);
   const [cursor, setCursor] = useState(false);
 
+  const history = useHistory();
+
   useEffect(() => {
     updateDirectoriesTree();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const routeChange = (path) =>{ 
+    history.push(path);
+  }
 
   const updateDirectoriesTree = () => {
     axios
@@ -25,7 +32,14 @@ const Directories = (props) => {
       .then((res) => {
         setPureData(res.data);
         setData(Object.assign({}, listToTree(res.data)));
-        props.onChange(res.data[0].id);
+        if (props.selectedDirectoryId) {
+          const selectedDictionary = res.data.filter((f) => f.id === Number.parseInt(props.selectedDirectoryId, 10));
+          if (selectedDictionary.length) {
+            props.onChange(selectedDictionary[0].id);
+          }
+        } else {
+          props.onChange(res.data[0].id);
+        }
       })
       .catch((error) => {
         console.log("error:", error);
@@ -48,33 +62,31 @@ const Directories = (props) => {
   };
 
   const updateDictionaryName = (node, e) => {
-    if (e.key === "Enter") {
-      const value = e.target.value;
-      console.log(node, value);
-      axios
-        .put("http://localhost:3001/directories/" + node.id, {
-          id: node.id,
-          parentId: node.parentId,
-          name: value,
-        })
-        .then((res) => {
-          const newPureData = pureData.map((item) => {
-            if (item.id === node.id) {
-              item.name = value;
-              item.editMode = false;
-            }
-            return item;
-          });
-          setPureData(newPureData);
-          setPureData((state) => {
-            setData(Object.assign({}, listToTree(state)));
-            return state;
-          });
-        })
-        .catch((error) => {
-          console.log("error:", error);
+    const value = e.target.value;
+    console.log(node, value);
+    axios
+      .put("http://localhost:3001/directories/" + node.id, {
+        id: node.id,
+        parentId: node.parentId,
+        name: value,
+      })
+      .then((res) => {
+        const newPureData = pureData.map((item) => {
+          if (item.id === node.id) {
+            item.name = value;
+            item.editMode = false;
+          }
+          return item;
         });
-    }
+        setPureData(newPureData);
+        setPureData((state) => {
+          setData(Object.assign({}, listToTree(state)));
+          return state;
+        });
+      })
+      .catch((error) => {
+        console.log("error:", error);
+      });
   };
 
   const deleteDictionary = (id) => {
@@ -129,7 +141,9 @@ const Directories = (props) => {
 
   class CutomContainer extends decorators.Container {
     _handleKeyDown = (e, node) => {
-      updateDictionaryName(node, e);
+      if (e.key === "Enter") {
+        updateDictionaryName(node, e);
+      }
     };
 
     editModeSwitcher = (node) => {
@@ -156,7 +170,8 @@ const Directories = (props) => {
     render() {
       const { style, decorators, onClick, node } = this.props;
       const classes = ["pointer"];
-      if (node.active && node.parentId) {
+      console.log(node, props.selectedDirectoryId);
+      if ((node.active && node.parentId) || (node.id === Number.parseInt(props.selectedDirectoryId, 10))) {
         classes.push("active");
       }
       return (
@@ -202,6 +217,7 @@ const Directories = (props) => {
   }
 
   const onToggle = (node, toggled) => {
+    console.log('a');
     if (cursor) {
       cursor.active = false;
     }
@@ -212,6 +228,7 @@ const Directories = (props) => {
     }
     setCursor(node);
     setData(Object.assign({}, data));
+    routeChange('/directories/' + node.id);
   };
 
   const defaultStyles = {
@@ -306,7 +323,11 @@ const Directories = (props) => {
       />
     );
   }
-  return <Container>{directoriesBlock}</Container>;
+  return (
+      <Container>
+        {directoriesBlock}
+      </Container>
+    );
 };
 
 export default Directories;
