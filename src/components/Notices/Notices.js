@@ -70,10 +70,10 @@ const Notices = (props) => {
       })
       .then((result) => {
         setNoticesData(
-          noticesData.filter((item, index) => {
+          noticesData.map((item, index) => {
             if (item.id === notice.id) {
               notice.editMode = false;
-              noticesData[index] = notice;
+              item = notice;
             }
             return item;
           })
