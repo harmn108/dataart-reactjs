@@ -2,7 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import Directories from "../components/Directories/Directories";
 import Notices from "../components/Notices/Notices";
-import Toolbar from "../components/Toolbar";
 import styled from "styled-components";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -25,9 +24,6 @@ const Dashboard = (props) => {
       : 0;
   return (
     <Container>
-      <ItemContainer flex="1">
-        <Toolbar />
-      </ItemContainer>
       <ItemContainer flex="4">
         <Directories
           selectedDirectoryId={selectedDirectoryId}

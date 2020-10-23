@@ -1,24 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import { useHistory } from "react-router-dom";
 
 const style = {
-  cursor: "move",
+  cursor: "pointer",
 };
-const Notice = ({
+
+const NoticeItem = ({
   id,
   data,
   text,
   moveNotice,
   findNotice,
+  viewNotice,
   updateNotice,
   deleteNotice,
 }) => {
   const [noticeData, setNoticeData] = useState(data);
 
+  const history = useHistory();
+
   useEffect(() => {
     setNoticeData(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  const routeChange = (path) => {
+    history.push(path);
+  };
 
   const editModeSwitcher = () => {
     setNoticeData({ ...noticeData, editMode: !noticeData.editMode });
@@ -59,7 +68,7 @@ const Notice = ({
 
   return (
     <span ref={(node) => drag(drop(node))} style={{ opacity }}>
-      <span style={{ ...style }}>
+      <span style={{ ...style }} onClick={() => viewNotice(noticeData.id)}>
         <i className="fa fa-tags" aria-hidden="true"></i>
         <i className="fa fa-file-text-o fa-2x" aria-hidden="true"></i>
       </span>
@@ -74,18 +83,18 @@ const Notice = ({
           <i
             className="fa fa-pencil pointer"
             aria-hidden="true"
-            onClick={() => editModeSwitcher()}
+            onClick={() => routeChange("/notice/edit/" + noticeData.id)}
           ></i>
           <i
             className="fa fa-trash pointer"
             aria-hidden="true"
             onClick={() => deleteNotice(noticeData.id)}
           ></i>
-          <div>{noticeData.title}</div>
+          <div onDoubleClick={() => editModeSwitcher()}>{noticeData.title}</div>
         </>
       )}
     </span>
   );
 };
 
-export default Notice;
+export default NoticeItem;
