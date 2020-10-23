@@ -4,6 +4,14 @@
 .pointer {
   cursor: pointer;
 }
+.directory-list-item {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #ececec;
+}
 .active {
   background-color: red;
 }

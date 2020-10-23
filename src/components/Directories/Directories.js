@@ -6,9 +6,7 @@ import styled from "styled-components";
 import { Treebeard, decorators } from "react-treebeard";
 import axios from "axios";
 
-const Container = styled.div`
-  border: 1px solid #ccc;
-`;
+const Container = styled.div``;
 
 const Directories = (props) => {
   const [pureData, setPureData] = useState([]);
@@ -18,7 +16,7 @@ const Directories = (props) => {
   const history = useHistory();
 
   useEffect(() => {
-    updateDirectoriesTree();
+    loadDirectoriesTree();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -26,7 +24,7 @@ const Directories = (props) => {
     history.push(path);
   };
 
-  const updateDirectoriesTree = () => {
+  const loadDirectoriesTree = () => {
     axios
       .get("http://localhost:3001/directories")
       .then((res) => {
@@ -65,7 +63,6 @@ const Directories = (props) => {
 
   const updateDictionaryName = (node, e) => {
     const value = e.target.value;
-    console.log(node, value);
     axios
       .put("http://localhost:3001/directories/" + node.id, {
         id: node.id,
@@ -171,8 +168,7 @@ const Directories = (props) => {
     };
     render() {
       const { style, decorators, onClick, node } = this.props;
-      const classes = ["pointer"];
-      console.log(node, props.selectedDirectoryId);
+      const classes = ["directory-list-item"];
       if (
         (node.active && node.parentId) ||
         node.id === Number.parseInt(props.selectedDirectoryId, 10)
@@ -188,33 +184,33 @@ const Directories = (props) => {
             // style={style.container[0]}
           >
             <decorators.Header node={node} style={style.header} />
-          </span>
-          <span>
-            {node.editMode ? null : (
-              <>
-                <i
-                  className="fa fa-plus pointer"
-                  aria-hidden="true"
-                  onClick={() => this.addNewItem(node)}
-                ></i>
-                <i
-                  className="fa fa-pencil pointer"
-                  aria-hidden="true"
-                  onClick={() => this.editModeSwitcher(node)}
-                ></i>
-                <i
-                  className="fa fa-trash pointer"
-                  aria-hidden="true"
-                  onClick={() => this.deleteItem(node)}
-                ></i>
-              </>
-            )}
-            <input
-              className={node.editMode ? "edit" : "hidden"}
-              type="text"
-              defaultValue={node.name}
-              onKeyDown={(e) => this._handleKeyDown(e, node)}
-            />
+            <span>
+              {node.editMode ? null : (
+                <>
+                  <i
+                    className="fa fa-plus pointer"
+                    aria-hidden="true"
+                    onClick={() => this.addNewItem(node)}
+                  ></i>
+                  <i
+                    className="fa fa-pencil pointer"
+                    aria-hidden="true"
+                    onClick={() => this.editModeSwitcher(node)}
+                  ></i>
+                  <i
+                    className="fa fa-trash pointer"
+                    aria-hidden="true"
+                    onClick={() => this.deleteItem(node)}
+                  ></i>
+                </>
+              )}
+              <input
+                className={node.editMode ? "edit" : "hidden"}
+                type="text"
+                defaultValue={node.name}
+                onKeyDown={(e) => this._handleKeyDown(e, node)}
+              />
+            </span>
           </span>
         </>
       );
@@ -222,7 +218,6 @@ const Directories = (props) => {
   }
 
   const onToggle = (node, toggled) => {
-    console.log("a");
     if (cursor) {
       cursor.active = false;
     }
@@ -243,14 +238,15 @@ const Directories = (props) => {
           listStyle: "none",
           backgroundColor: "white",
           margin: 0,
-          padding: 0,
           color: "#9DA5AB",
           fontFamily: "lucida grande ,tahoma,verdana,arial,sans-serif",
           fontSize: "14px",
+          padding: "24px",
         },
         node: {
           base: {
             position: "relative",
+            color: "green",
           },
           link: {
             cursor: "pointer",

@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 // import SearchBar from "../SearchBar.js";
-import Notice from "./Notice.js";
+import NoticeItem from "./NoticeItem.js";
 import styled from "styled-components";
 import axios from "axios";
 import { useDrop } from "react-dnd";
 import update from "immutability-helper";
 
 const Container = styled.div`
-  border: 1px solid #ccc;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  padding: 24px;
+`;
+
+const AddContainer = styled.div`
+  // padding: 24px;
 `;
 
 const Notices = (props) => {
   const [noticesData, setNoticesData] = useState([]);
+
+  const history = useHistory();
 
   useEffect(() => {
     if (props.directoryId) {
@@ -21,6 +28,10 @@ const Notices = (props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.directoryId]);
+
+  const routeChange = (path) => {
+    history.push(path);
+  };
 
   const getNoticesData = () => {
     axios
@@ -39,24 +50,13 @@ const Notices = (props) => {
       });
   };
 
-  // const addNotice = (
-  //   directoryId,
-  //   title = "test notice 2",
-  //   description = "test description 2",
-  //   tags = ["test tag 2", "test tag 2"]
-  // ) => {
-  //   axios
-  //     .post("http://localhost:3001/notices", {
-  //       directoryId,
-  //       title,
-  //       description,
-  //       tags,
-  //     })
-  //     .then((res) => {})
-  //     .catch((error) => {
-  //       console.log("error:", error);
-  //     });
-  // };
+  const addNotice = () => {
+    routeChange("/notice/add?directoryId=" + props.directoryId);
+  };
+
+  const viewNotice = (id) => {
+    routeChange("/notice/" + id);
+  };
 
   const updateNotice = (notice) => {
     axios
@@ -141,13 +141,14 @@ const Notices = (props) => {
   let noticesList = null;
   if (noticesData && noticesData.length) {
     noticesList = noticesData.map((notice) => (
-      <Notice
+      <NoticeItem
         key={notice.id}
         data={notice}
         id={`${notice.id}`}
         text={notice.text}
         moveNotice={moveNotice}
         findNotice={findNotice}
+        viewNotice={viewNotice}
         updateNotice={updateNotice}
         deleteNotice={deleteNotice}
       />
@@ -155,10 +156,20 @@ const Notices = (props) => {
   }
 
   return (
-    <Container ref={drop}>
-      {noticesList}
-      {/* <div><SearchBar/></div> */}
-    </Container>
+    <>
+      <AddContainer>
+        <i
+          className="fa fa-plus-circle fa-2x pointer"
+          aria-hidden="true"
+          onClick={() => addNotice()}
+        ></i>
+        add notice
+      </AddContainer>
+      <Container ref={drop}>
+        {noticesList}
+        {/* <div><SearchBar/></div> */}
+      </Container>
+    </>
   );
 };
 
